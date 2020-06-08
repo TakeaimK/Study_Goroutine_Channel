@@ -2,9 +2,10 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
-	"io/ioutil"
-	"strings"
+	"io"
+	"os"
 )
 
 func AllwordsGenerator(filename string) <-chan string {
@@ -13,14 +14,34 @@ func AllwordsGenerator(filename string) <-chan string {
 	go func() {
 		defer close(WordStream)
 
-		data, _ := ioutil.ReadFile(filename)
-
-		temp := string(data)
-		ans := strings.Split(temp, " ")
-
-		for _, word := range ans {
-			WordStream <- word
+		fo, err := os.Open(filename)
+		if err != nil {
+			panic(err)
 		}
+		defer fo.Close()
+
+		reader := bufio.NewReader(fo)
+
+		for {
+			line, err := reader.ReadString(' ')
+
+			if err == io.EOF {
+				WordStream <- line
+				break
+			}
+
+			if err != nil {
+				break
+			}
+			WordStream <- line
+		}
+		//data, _ := ioutil.ReadFile(filename)
+		//temp := string(data)
+		//ans := strings.Split(temp, " ")
+		//
+		//for _, word := range ans {
+		//	WordStream <- word
+		//}
 
 	}()
 	return WordStream
