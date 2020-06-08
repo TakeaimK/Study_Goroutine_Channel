@@ -10,6 +10,11 @@ import (
 func Combinations(ch chan []string, set []string, n int) {
 	length := uint(len(set))
 
+	if n == 0 {
+		ch <- []string{}
+		return
+	}
+
 	if n > len(set) {
 		n = len(set)
 	}
@@ -47,7 +52,7 @@ func CombinationGenerator(fruit []string, n int) <-chan []string {
 }
 
 func main() {
-	for i := range CombinationGenerator([]string{"사과", "배", "복숭아", "포도", "귤"}, 2) {
+	for i := range CombinationGenerator([]string{"사과", "배", "복숭아", "포도", "귤"}, 0) {
 		fmt.Println(i)
 	}
 }
