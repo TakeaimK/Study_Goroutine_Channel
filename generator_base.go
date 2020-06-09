@@ -2,22 +2,31 @@ package main
 
 import "fmt"
 
-func IntegerGenerator(n int) <-chan int {
+func IntegerGenerator(done chan struct{}) <-chan int {
 	next := 0
 	intStream := make(chan int)
 
 	go func() {
 		defer close(intStream)
-		for next < n {
-			next++
-			intStream <- next
+		for {
+			select {
+			case <-done:
+				return
+			default:
+				next++
+				intStream <- next
+			}
 		}
+
 	}()
 	return intStream
 }
 
 func main() {
-	for i := range IntegerGenerator(10) {
-		fmt.Println(i)
+	done := make(chan struct{})
+	IntegerStream := IntegerGenerator(done)
+	for i := 0; i < 3; i++ {
+		fmt.Printf("%d", <-IntegerStream)
 	}
+	close(done)
 }
