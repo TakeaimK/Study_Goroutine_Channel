@@ -24,6 +24,7 @@ func IntegerGenerator(done chan struct{}) <-chan int {
 
 func main() {
 	done := make(chan struct{})
+
 	IntegerStream := IntegerGenerator(done)
 	for i := 0; i < 3; i++ {
 		fmt.Printf("%d", <-IntegerStream)
