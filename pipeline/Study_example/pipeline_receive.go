@@ -44,10 +44,15 @@ func square(done <-chan struct{}, in <-chan int) (<-chan struct{}, <-chan int) {
 func addone(done <-chan struct{}, in <-chan int) (<-chan struct{}, <-chan int) {
 	out := make(chan int)
 	go func() {
-		for n := range in {
-			out <- n + 1
+		for {
+			select {
+			case n := <-in:
+				out <- n + 1
+			case <-done:
+				close(out)
+				return
+			}
 		}
-		close(out)
 	}()
 	return done, out
 }
@@ -60,7 +65,7 @@ func finalPipe(done <-chan struct{}, in <-chan int) <-chan int {
 			case n := <-in:
 				out <- n
 			case <-done:
-				fmt.Println("done!")
+				//fmt.Println("done!")
 				close(out)
 				return
 			}
