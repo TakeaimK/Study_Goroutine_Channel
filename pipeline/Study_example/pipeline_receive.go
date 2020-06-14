@@ -27,12 +27,12 @@ func square(done <-chan struct{}, in <-chan int) (<-chan struct{}, <-chan int) {
 	out := make(chan int)
 
 	go func() {
+		defer close(out)
 		for {
 			select {
 			case n := <-in:
 				out <- n * n
 			case <-done:
-				close(out)
 				return
 			}
 
@@ -44,12 +44,12 @@ func square(done <-chan struct{}, in <-chan int) (<-chan struct{}, <-chan int) {
 func addone(done <-chan struct{}, in <-chan int) (<-chan struct{}, <-chan int) {
 	out := make(chan int)
 	go func() {
+		defer close(out)
 		for {
 			select {
 			case n := <-in:
 				out <- n + 1
 			case <-done:
-				close(out)
 				return
 			}
 		}
@@ -60,13 +60,13 @@ func addone(done <-chan struct{}, in <-chan int) (<-chan struct{}, <-chan int) {
 func finalPipe(done <-chan struct{}, in <-chan int) <-chan int {
 	out := make(chan int)
 	go func() {
+		defer close(out)
 		for {
 			select {
 			case n := <-in:
 				out <- n
 			case <-done:
 				//fmt.Println("done!")
-				close(out)
 				return
 			}
 		}
