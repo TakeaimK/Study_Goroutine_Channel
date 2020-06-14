@@ -27,7 +27,7 @@ func main() {
 
 	IntegerStream := IntegerGenerator(done)
 	for i := 0; i < 3; i++ {
-		fmt.Printf("%d", <-IntegerStream)
+		fmt.Printf("%d\n", <-IntegerStream)
 	}
 	close(done)
 }
